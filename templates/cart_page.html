@@ -1,0 +1,176 @@
+{% extends 'base.html' %}
+{% block title %}Cart-Ecommerce Site{% endblock title %}
+{% block body %}
+<h1 class="container mt-5">Your Cart Items are here:</h1>
+<div class="container" id="cart_page_details"></div>
+<div class="container d-flex justify-content-center my-2 " id="cart_total_price">
+
+</div>
+
+<div class="container d-flex justify-content-center" id="clear_cart_btn">
+
+</div>
+
+<div class="container">
+    {% if messages %}
+<ul class="messages">
+    {% for message in messages %}
+    <div class="alert alert-success mt-3" role="alert">
+        {{ message }}
+      </div>
+    {% endfor %}
+</ul>
+{% endif %}
+</div>
+<div class="container" , id="checkout_form">
+    <h1 class="my-3">Checkout Page</h1>
+    <form action="/cart-page/" method="POST"> {% csrf_token %}
+
+        <div class="mb-3">
+            <input type="hidden" name="products_ordered" class="form-control" id="product_ordered"
+                aria-describedby="emailHelp">
+        </div>
+
+        <div class="mb-3">
+            <label for="name" class="form-label">Name</label>
+            <input type="text" name="name" class="form-control" id="name" aria-describedby="emailHelp">
+        </div>
+
+        <div class="mb-3">
+            <label for="exampleInputEmail1" class="form-label">Email address</label>
+            <input type="email" name="email_address" class="form-control" id="exampleInputEmail1"
+                aria-describedby="emailHelp">
+        </div>
+
+        <div class="mb-3">
+            <label for="phonenumber" class="form-label">Your active Phone Number</label>
+            <input type="text" name="phone_number" class="form-control" id="phonenumber" aria-describedby="emailHelp">
+        </div>
+
+        <div class="mb-3">
+            <label for="city" class="form-label">City</label>
+            <input type="text" name="city" class="form-control" id="city">
+        </div>
+
+        <div class="mb-3">
+            <label for="country" class="form-label">Country</label>
+            <input type="text" name="country" class="form-control" id="country">
+        </div>
+
+        <div class="mb-3">
+            <label for="firstaddress" class="form-label">Your #1 Address</label>
+            <input type="text" name="first_address" class="form-control" id="firstaddress">
+        </div>
+
+        <div class="mb-3">
+            <label for="secondaddress" class="form-label">Your #2 Address</label>
+            <input type="text" name="second_address" class="form-control" id="secondaddress"
+                aria-describedby="emailHelp">
+        </div>
+        <button id="submit" type="submit" class="btn btn-primary">Submit</button>
+    </form>
+</div>
+
+
+{% endblock body %}
+
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        if (localStorage.getItem('cart') != null) {
+            cart = JSON.parse(localStorage.getItem('cart'))
+        }
+        else {
+            var cart = {}
+        }
+
+        if (localStorage.getItem('cart') !== null) {
+            $("#clear_cart_btn").append(`<button type="button" class="btn btn-danger" id="clear_cart_btn">Clear Cart</button>`)
+            $("#cart_total_price").append(`<button type="button" class="btn btn-success" id="total_price_btn"> <span id="total_price"></span> </button>`)
+        }
+        else {
+            document.getElementById("cart_page_details").innerHTML = `<p> You don't have any product in your cart. Please <b>add</b> some products in the cart`;
+            var x = document.getElementById('checkout_form')
+            x.style.display = "none"
+        }
+
+
+        let i = 0
+        var prices = []
+        var order_pr = []
+        for (var item in cart) {
+            items = item.split(',')
+            // console.log(item)
+            mystr = `<ol class="list-group my-2 list-group">
+                    <li class="list-group-item d-flex justify-content-between align-items-start">
+                        <div class="btnclass ms-2 me-auto">
+                            <div class="fw-bold"><span id="cart_page_product">${items[0]}</span></div>
+                            <div class="cart_product_price text-info">${items[1]}</div>
+                        </div>
+                        <div class="ok_btn" id="ok_btn${items[0]},${items[1]},${items[2]}"> </div>
+                            <div class="btnclass">
+                                <div class="desc"></div>
+                            <button id="minus${items[0]},${items[1]},${items[2]}" class="minus btn-sm btn-warning mx-3">-</button>
+                            <span id="cart_qnty${items[0]},${items[1]},${items[2]}">Qn</span>
+                            <button id="plus${items[0]},${items[1]},${items[2]}" class="plus btn-sm btn-success mx-3">+</button>
+                            </div>
+                            
+                        <span class="badge bg-primary rounded-pill" id="qnt">Qnt: ${cart[item]}</span>
+                            </li>
+                            </ol>`
+            $("#cart_page_details").append(mystr)
+            
+            
+            // Watch 1,35643,product1: 1,
+            // Watch 1,35643,product2
+            
+            order_pr.push(`  |||  Prdouct: ${items[0]}, Product-ID: ${items[2].slice(7, 99999)}, Quantity_Ordered: ${cart[item]}`)
+            
+            prices.push(parseFloat(items[1]*cart[item]))
+        }
+        console.log(prices)
+        var total_price = prices.reduce((x, y) => x + y);
+        document.getElementById('total_price_btn').innerHTML = `Total Bill of the Purchases: <b>${total_price}</b>`
+        $('#clear_cart_btn').on('click', function () {
+            localStorage.clear()
+            location.reload();
+        });
+
+        
+        document.getElementById("product_ordered").value = order_pr;
+        $('#submit').on('click', function () {
+            localStorage.clear()
+        })
+        
+        $('.btnclass').on('click','button.plus', function () {
+            var btnid = this.id.toString().slice(4,)
+            var sgr = `<button  class="btn-sm btn-primary mx-3">Done this Quantity.</button>`
+            document.getElementById('ok_btn'+btnid).innerHTML = sgr
+            cart[btnid] = cart[btnid] +1
+            document.getElementById('cart_qnty'+btnid).innerHTML = cart[btnid]
+            localStorage.setItem('cart', JSON.stringify(cart))
+        })
+        
+        $('.btnclass').on('click','button.minus', function () {
+            var btnid = this.id.toString().slice(5,)
+            var sgr = `<button  class="btn-sm btn-primary mx-3">Done this Quantity.</button>`
+            document.getElementById('ok_btn'+btnid).innerHTML = sgr
+            cart[btnid] = cart[btnid] -1
+            if(cart[btnid]<=0){
+                cart[btnid] = 0
+            }
+            document.getElementById('cart_qnty'+btnid).innerHTML = cart[btnid]
+            localStorage.setItem('cart', JSON.stringify(cart))
+
+        })
+        $('.ok_btn').on('click',function () {
+            location.reload();
+        })
+        
+    });
+    
+</script>
+
+{% endblock script %}
+<!-- console.log(JSON.parse(localStorage.getItem('cart'))) -->

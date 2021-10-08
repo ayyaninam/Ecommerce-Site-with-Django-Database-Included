@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+{% block title %}{{one_product.name}}-Ecommerce Shop Product{% endblock title %}
+{% block body %}
+
+
+
+<div class="container my-5">
+    <div class="row">
+        <div class="col">
+            <img src="{{one_product.image.url}}" alt="" style=" width: 100%; object-fit:cover; height: 100%;">
+        </div>
+        <div class="col mx-3 bg-light border border-3">
+            <div class="text p-3">
+                <h2 class="product_name">{{one_product.name}}</h2>
+                <h4 class="text-info product_price">{{one_product.d_price}}</h4>
+                <h6 class="text brand" id="product{{one_product.id}}">Brand: {{one_product.brand}}</h6>
+                <p>{{one_product.description}}</p>
+            </div>
+        </div>
+
+    </div>
+</div>
+<div class="container">
+
+    <div class="bg-light border border-5 rounded-start my-5">
+        <div class="text p-5">
+
+            <h4 class="mt-3">Want to Purchase this product?</h4>
+            <h6>This is Our Terms and Conditions</h6>
+            <ul>
+                <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ratione veniam inventore eaque perferendis
+                    sit quo, autem dicta aliquid excepturi, possimus consequuntur, laborum temporibus soluta aperiam
+                    aliquam necessitatibus minima harum doloribus!</li>
+                <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ratione veniam inventore eaque perferendis
+                    sit quo, autem dicta aliquid excepturi, possimus consequuntur, laborum temporibus soluta aperiam
+                    aliquam necessitatibus minima harum doloribus!</li>
+                <li>Lorem ipsum dolor sit amet, consectetur adipisicing elit. Ratione veniam inventore eaque perferendis
+                    sit quo, autem dicta aliquid excepturi, possimus consequuntur, laborum temporibus soluta aperiam
+                    aliquam necessitatibus minima harum doloribus!</li>
+            </ul>
+            <a href="/cart-page" class="btn btn-success mx-2">Order Now</a>
+            <a id="product1" class="btn btn-outline-primary cart_button">Add to Cart</a>
+        </div>
+    </div>
+</div>
+
+
+{% block script %}
+<script>
+    $(document).ready(function () {
+        if (localStorage.getItem('cart') != null) {
+            cart = JSON.parse(localStorage.getItem('cart'))
+        }
+        else {
+            var cart = {}
+        }
+        function update_c_n() {
+            var cart_number = Object.keys(cart).length;
+            cart_no = document.getElementById('cart_number')
+            cart_no.innerHTML = cart_number
+        }
+        $('.cart_button').on('click', function () {
+            var idstr = this.id.toString()
+            oid = document.getElementsByClassName('brand')[0].id
+
+            var product_name = document.getElementsByClassName('product_name')[(idstr.slice(7, 99999)) - 1].innerHTML
+            var product_price = document.getElementsByClassName('product_price')[(idstr.slice(7, 99999)) - 1].innerHTML
+            jsondetails = [product_name, product_price, oid]
+            if (cart[jsondetails] != undefined) {
+                cart[jsondetails] = cart[jsondetails] + 1
+            }
+            else {
+                cart[jsondetails] = 1
+            }
+            localStorage.setItem('cart', JSON.stringify(cart))
+            update_c_n()
+        });
+        update_c_n()
+
+    });
+</script>
+{% endblock script %}
+
+
+
+
+
+{% endblock body %}

@@ -1,0 +1,38 @@
+{% extends 'base.html' %}
+{% block body %}
+    <div class="container my-5">
+        <form action="/tracker/" method="POST" class="row g-3"> {% csrf_token %} 
+            <div class="col-md-6">
+                    <label for="inputEmail4" class="form-label">Email</label>
+                    <input type="email" name="email" class="form-control" id="inputEmail4">
+                </div>
+
+            <div class="col-md-6">
+              <label for="order_id" class="form-label">Your Order ID</label>
+              <input type="text" name="order_id" class="form-control" id="order_id">
+            </div>
+            
+            <div class="col-12 d-flex justify-content-center">
+              <button type="submit" class="btn btn-warning ">Get Updates</button>
+            </div>
+          </form>
+    </div>
+
+
+
+    
+    <div class="container">
+        {% if messages %}
+    <ul class="messages">
+        {% for message in messages %}
+        <div class="alert alert-success mt-3" role="alert">
+            {{ message }}
+          </div>
+        {% endfor %}
+    </ul>
+    {% endif %}
+</div>
+
+
+
+{% endblock body %}

@@ -1,0 +1,30 @@
+{% extends 'base.html' %}
+{% block title %}Home Ecommerce Store{% endblock title %}
+
+{% block body %}
+
+
+<!-- Cards ////////////////// -->
+<div class="container">
+    <h1 class="mt-5">Our All Brandnew Watches</h1>
+    {% for p in product %}
+    <div class="card d-inline-block my-5 mx-2" style="width: 18rem;">
+        <img src="{{p.image.url}}" class="card-img-top" alt="..."
+            style=" width: 100%; object-fit:cover; height: 300px;">
+        <div class="card-body">
+            <h5 class="product_name card-title">{{p.name}}</h5>
+            <h6 class="product_price card-title text-info">{{p.d_price}}</h6>
+            <p class="card-text">{{p.description|slice:":100"}}..............</p>
+            <a href="/product/{{p.id}}" class="btn btn-success mx-2">View Product</a>
+
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+</body>
+
+
+
+
+{% endblock body %}
